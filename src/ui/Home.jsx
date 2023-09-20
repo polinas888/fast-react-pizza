@@ -1,6 +1,6 @@
-import { useSelector } from "react-redux";
-import CreateUser from "../features/user/CreateUser";
-import Button from "./Button";
+import { useSelector } from 'react-redux';
+import CreateUser from '../features/user/CreateUser';
+import Button from './Button';
 
 function Home() {
   const userName = useSelector((state) => state.user.name);
@@ -16,7 +16,7 @@ function Home() {
       {!userName ? (
         <CreateUser />
       ) : (
-        <Button to="/menu" type="primary">
+        <Button to="/menu" variant="primary">
           Continue ordering, {userName}
         </Button>
       )}

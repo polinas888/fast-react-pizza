@@ -1,10 +1,10 @@
 /* eslint-disable react/prop-types */
-import { useDispatch, useSelector } from "react-redux";
-import Button from "../../ui/Button";
-import { formatCurrency } from "../../utils/helpers";
-import { addItem, getPizzaQuantity } from "../cart/CartSlice";
-import DeleteItem from "../../ui/DeleteItem";
-import UpdateItemQuantity from "../cart/UpdateItemQuantity";
+import { useDispatch, useSelector } from 'react-redux';
+import Button from '../../ui/Button';
+import { formatCurrency } from '../../utils/helpers';
+import { addItem, getPizzaQuantity } from '../cart/CartSlice';
+import DeleteItem from '../../ui/DeleteItem';
+import UpdateItemQuantity from '../cart/UpdateItemQuantity';
 
 function MenuItem({ pizza }) {
   const { id, name, unitPrice, ingredients, soldOut, imageUrl } = pizza;
@@ -16,12 +16,12 @@ function MenuItem({ pizza }) {
       <img
         src={imageUrl}
         alt={name}
-        className={`h-24 ${soldOut ? "opacity-70 grayscale" : ""}`}
+        className={`h-24 ${soldOut ? 'opacity-70 grayscale' : ''}`}
       />
       <div className="flex-grow flex-col justify-between pt-0.5">
         <p className="font-medium">{name}</p>
         <p className="max-w-sm text-sm capitalize italic text-stone-500">
-          {ingredients.join(", ")}
+          {ingredients.join(', ')}
         </p>
         <div className="mt-auto flex items-center justify-between">
           {!soldOut ? (
@@ -41,7 +41,7 @@ function MenuItem({ pizza }) {
             {pizzaQuantity > 0 && <DeleteItem pizzaId={id} />}
             {!soldOut && pizzaQuantity === 0 && (
               <Button
-                type="small"
+                variant="small"
                 onClick={() => {
                   dispatch(
                     addItem({

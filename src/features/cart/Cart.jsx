@@ -1,9 +1,9 @@
-import Button from "../../ui/Button";
-import LinkButton from "../../ui/LinkButton";
-import { useDispatch, useSelector } from "react-redux";
-import CartItem from "./CartItem";
-import { clearCart } from "./CartSlice";
-import EmptyCart from "./EmptyCart";
+import Button from '../../ui/Button';
+import LinkButton from '../../ui/LinkButton';
+import { useDispatch, useSelector } from 'react-redux';
+import CartItem from './CartItem';
+import { clearCart } from './CartSlice';
+import EmptyCart from './EmptyCart';
 
 function Cart() {
   const userName = useSelector((state) => state.user.name);
@@ -24,11 +24,11 @@ function Cart() {
       </ul>
 
       <div className="mt-6 space-x-2">
-        <Button to="/order/new" type="primary">
+        <Button to="/order/new" variant="primary">
           Order pizzas
         </Button>
 
-        <Button type="secondary" onClick={() => dispatch(clearCart())}>
+        <Button variant="secondary" onClick={() => dispatch(clearCart())}>
           Clear cart
         </Button>
       </div>
