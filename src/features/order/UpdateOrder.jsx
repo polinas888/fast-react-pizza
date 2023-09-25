@@ -1,11 +1,11 @@
 import { useFetcher } from 'react-router-dom';
-import Button from '../../ui/Button';
+import Button from '../../ui/buttons/Button';
 
-function UpdateOrder({ order }) {
+function UpdateOrder() {
   const fetcher = useFetcher();
   return (
     <div>
-      <fetcher.Form method="PATCH" className="text-right">
+      <fetcher.Form method="PATCH">
         <Button variant="primary">Set priority</Button>
       </fetcher.Form>
     </div>

@@ -1,9 +1,15 @@
-import Button from '../../ui/Button';
-import LinkButton from '../../ui/LinkButton';
+import Button from '../../ui/buttons/Button';
+import BackButton from '../../ui/buttons/BackButton';
 import { useDispatch, useSelector } from 'react-redux';
 import CartItem from './CartItem';
 import { clearCart } from './CartSlice';
 import EmptyCart from './EmptyCart';
+import {
+  CartTitle,
+  CartItemsList,
+  CartButtonsContainer,
+  StyledCart,
+} from './styledComponents/StyledCart';
 
 function Cart() {
   const userName = useSelector((state) => state.user.name);
@@ -12,18 +18,18 @@ function Cart() {
 
   if (!cart.length) return <EmptyCart />;
   return (
-    <div className="px-4 py-3">
-      <LinkButton to="/menu">&larr; Back to menu</LinkButton>
+    <StyledCart>
+      <BackButton to="/menu">&larr; Back to menu</BackButton>
 
-      <h2 className="mt-7 text-xl font-semibold">Your cart, {userName}</h2>
+      <CartTitle>Your cart, {userName}</CartTitle>
 
-      <ul className="mt-3 divide-y divide-stone-200 border-b">
+      <CartItemsList>
         {cart.map((item) => (
           <CartItem item={item} key={item.pizzaId} />
         ))}
-      </ul>
+      </CartItemsList>
 
-      <div className="mt-6 space-x-2">
+      <CartButtonsContainer>
         <Button to="/order/new" variant="primary">
           Order pizzas
         </Button>
@@ -31,8 +37,8 @@ function Cart() {
         <Button variant="secondary" onClick={() => dispatch(clearCart())}>
           Clear cart
         </Button>
-      </div>
-    </div>
+      </CartButtonsContainer>
+    </StyledCart>
   );
 }
 

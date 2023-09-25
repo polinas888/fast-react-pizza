@@ -1,8 +1,13 @@
 import { useState } from 'react';
-import Button from '../../ui/Button';
+import Button from '../../ui/buttons/Button';
 import { updateUser } from './userSlice';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import {
+  FormCreateUser,
+  FormCreateUserText,
+  InputCreateUser,
+} from '../../ui/forms/FormCreateUser';
 
 function CreateUser() {
   const [username, setUsername] = useState('');
@@ -17,17 +22,16 @@ function CreateUser() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <p className="mb-4 text-stone-600">
+    <FormCreateUser onSubmit={handleSubmit}>
+      <FormCreateUserText>
         👋 Welcome! Please start by telling us your name:
-      </p>
+      </FormCreateUserText>
 
-      <input
+      <InputCreateUser
         type="text"
         placeholder="Your full name"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
-        className=" input mb-8 w-72"
       />
 
       {username !== '' && (
@@ -35,7 +39,7 @@ function CreateUser() {
           <Button variant="primary">Start ordering</Button>
         </div>
       )}
-    </form>
+    </FormCreateUser>
   );
 }
 

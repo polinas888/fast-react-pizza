@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import Button from '../../ui/Button';
+import Button from '../../ui/buttons/Button';
 import { increaseItemQuantity, decreaseItemQuantity } from './CartSlice';
 
 function UpdateItemQuantity({ pizzaId }) {
