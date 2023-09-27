@@ -18,7 +18,6 @@ import {
   FormLabel,
   FormTitle,
   InputContainer,
-  InputContainerForPosition,
 } from '../../ui/forms/FormOrder';
 
 // https://uibakery.io/regex-library/phone-number
@@ -157,9 +156,6 @@ export async function action({ request }) {
   };
 
   const createdOrder = await createOrder(newOrder);
-  console.log('Created');
-  console.log(newOrder);
-  console.log(createdOrder.id);
   store.dispatch(clearCart());
 
   return redirect(`/order/${createdOrder.id}`);
