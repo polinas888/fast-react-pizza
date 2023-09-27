@@ -64,11 +64,7 @@ function CreateOrder() {
         <InputContainer>
           <FormLabel>Phone number</FormLabel>
           <FormInput type="tel" name="phone" required />
-          {errors?.phone && (
-            <p className="mt-2 rounded-md bg-red-100 p-2 text-xs text-red-700">
-              {errors.phone}
-            </p>
-          )}
+          {errors?.phone && <InputError>{errors.phone}</InputError>}
         </InputContainer>
 
         <InputContainer position="true">
@@ -80,7 +76,6 @@ function CreateOrder() {
             defaultValue={address}
             required
           />
-          {status === 'error' && <InputError>{errorAddress}</InputError>}
           {!position.latitude && !position.longitute && (
             <PositionButtonContainer>
               <Button
@@ -96,6 +91,7 @@ function CreateOrder() {
             </PositionButtonContainer>
           )}
         </InputContainer>
+        {status === 'error' && <InputError>{errorAddress}</InputError>}
 
         <PriorityContainer>
           <PriorityCheckbox
