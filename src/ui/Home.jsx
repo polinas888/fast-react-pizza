@@ -12,6 +12,7 @@ const StyledHome = styled.div`
 
 function Home() {
   const userName = useSelector((state) => state.user.name);
+
   return (
     <StyledHome>
       <HeaderContainer>

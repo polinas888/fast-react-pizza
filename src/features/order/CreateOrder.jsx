@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Form, redirect, useActionData, useNavigation } from 'react-router-dom';
+import { Form, useNavigation } from 'react-router-dom';
 import { createOrder } from '../../services/apiRestaurant';
 import Button from '../../ui/buttons/Button';
 import { useDispatch, useSelector } from 'react-redux';
@@ -19,6 +19,7 @@ import {
   FormTitle,
   InputContainer,
 } from '../../ui/forms/FormOrder';
+import { useNavigate } from 'react-router-dom';
 
 // https://uibakery.io/regex-library/phone-number
 const isValidPhone = (str) =>
@@ -41,16 +42,53 @@ function CreateOrder() {
   const isLoadingAddress = status === 'loading';
 
   const navigation = useNavigation();
+  const navigate = useNavigate();
   const isSubmitting = navigation.state === 'submitting';
   const dispatch = useDispatch();
+  const errors = {};
+  //Need logic to handle wrong input
 
-  const errors = useActionData();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData);
+
+    if (!isValidPhone(data.phone)) {
+      errors.phoneError =
+        'Please give us your phone number. We may need to contact you';
+    }
+
+    if (!isValidPhone(data.phone)) {
+      errors.phoneError =
+        'Please give us your phone number. We may need to contact you';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      return errors;
+    }
+
+    const newOrder = {
+      customer: data.customer,
+      phone: data.phone,
+      address: data.address,
+      priority: data.priority === 'true',
+      cart: JSON.parse(data.cart),
+    };
+
+    try {
+      const createdOrder = await createOrder(newOrder);
+      store.dispatch(clearCart());
+      navigate(`/order/${createdOrder.id}`);
+    } catch (error) {
+      //Need logic to handle Error on UI
+      console.log('Failed to create order. Please try again later.');
+    }
+  };
 
   return (
     <div className="px-4 py-6">
       <FormTitle>Ready to order? Let's go!</FormTitle>
-
-      <Form method="POST">
+      <Form method="POST" onSubmit={handleSubmit}>
         <InputContainer>
           <FormLabel>First Name</FormLabel>
           <FormInput
@@ -63,7 +101,12 @@ function CreateOrder() {
 
         <InputContainer>
           <FormLabel>Phone number</FormLabel>
-          <FormInput type="tel" name="phone" required />
+          <FormInput
+            type="tel"
+            name="phone"
+            required
+            placeholder="put at lease 5 numbers"
+          />
           {errors?.phone && <InputError>{errors.phone}</InputError>}
         </InputContainer>
 
@@ -127,34 +170,6 @@ function CreateOrder() {
       </Form>
     </div>
   );
-}
-
-export async function action({ request }) {
-  const formData = await request.formData();
-  const data = Object.fromEntries(formData);
-  const errors = {};
-
-  if (!isValidPhone(data.phone)) {
-    errors.phoneError =
-      'Please give us your phone number. We may need to contact you';
-  }
-
-  if (Object.keys(errors).length > 0) {
-    return errors;
-  }
-
-  const newOrder = {
-    customer: data.customer,
-    phone: data.phone,
-    address: data.address,
-    priority: data.priority === 'true',
-    cart: JSON.parse(data.cart),
-  };
-
-  const createdOrder = await createOrder(newOrder);
-  store.dispatch(clearCart());
-
-  return redirect(`/order/${createdOrder.id}`);
 }
 
 export default CreateOrder;
