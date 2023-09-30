@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   pizzasList: [],
   error: '',
+  loading: false,
 };
 
 const menuSlice = createSlice({
@@ -11,6 +12,10 @@ const menuSlice = createSlice({
   reducers: {
     menuLoad: (state, action) => {
       state.pizzasList = action.payload;
+      state.loading = false;
+    },
+    startLoading: (state) => {
+      state.loading = true;
     },
     catchError: (state, action) => {
       state.error = action.payload;
@@ -18,5 +23,5 @@ const menuSlice = createSlice({
   },
 });
 
-export const { menuLoad, catchError } = menuSlice.actions;
+export const { menuLoad, catchError, startLoading } = menuSlice.actions;
 export default menuSlice.reducer;
