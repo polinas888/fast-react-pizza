@@ -1,10 +1,22 @@
 /* eslint-disable react/prop-types */
 import { useDispatch, useSelector } from 'react-redux';
-import Button from '../../ui/Button';
+import Button from '../../ui/buttons/Button';
 import { formatCurrency } from '../../utils/helpers';
 import { addItem, getPizzaQuantity } from '../cart/CartSlice';
 import DeleteItem from '../../ui/DeleteItem';
 import UpdateItemQuantity from '../cart/UpdateItemQuantity';
+import {
+  Ingredients,
+  PizzaImage,
+  PizzaInfoContainer,
+  PizzaName,
+  PizzaPrice,
+  PriceContainer,
+  QuantityContainer,
+  QuantityContainerPizzaNotSoldOut,
+  SoldOutText,
+  StyledMenuItem,
+} from './styledComponents/StyledMenuItem';
 
 function MenuItem({ pizza }) {
   const { id, name, unitPrice, ingredients, soldOut, imageUrl } = pizza;
@@ -12,32 +24,28 @@ function MenuItem({ pizza }) {
   const pizzaQuantity = useSelector(getPizzaQuantity(id));
 
   return (
-    <li className="flex gap-4 py-2">
-      <img
+    <StyledMenuItem>
+      <PizzaImage
         src={imageUrl}
         alt={name}
         className={`h-24 ${soldOut ? 'opacity-70 grayscale' : ''}`}
       />
-      <div className="flex-grow flex-col justify-between pt-0.5">
-        <p className="font-medium">{name}</p>
-        <p className="max-w-sm text-sm capitalize italic text-stone-500">
-          {ingredients.join(', ')}
-        </p>
-        <div className="mt-auto flex items-center justify-between">
+      <PizzaInfoContainer>
+        <PizzaName>{name}</PizzaName>
+        <Ingredients>{ingredients.join(', ')}</Ingredients>
+        <PriceContainer>
           {!soldOut ? (
-            <p className="text-sm">{formatCurrency(unitPrice)}</p>
+            <PizzaPrice>{formatCurrency(unitPrice)}</PizzaPrice>
           ) : (
-            <p className="text-sm font-medium uppercase text-stone-500">
-              Sold out
-            </p>
+            <SoldOutText>Sold out</SoldOutText>
           )}
 
-          <div className="flex items-center">
-            <div className="mr-2">
+          <QuantityContainer>
+            <QuantityContainerPizzaNotSoldOut>
               {!soldOut && pizzaQuantity !== 0 && (
                 <UpdateItemQuantity pizzaId={id} />
               )}
-            </div>
+            </QuantityContainerPizzaNotSoldOut>
             {pizzaQuantity > 0 && <DeleteItem pizzaId={id} />}
             {!soldOut && pizzaQuantity === 0 && (
               <Button
@@ -57,10 +65,10 @@ function MenuItem({ pizza }) {
                 Add to cart
               </Button>
             )}
-          </div>
-        </div>
-      </div>
-    </li>
+          </QuantityContainer>
+        </PriceContainer>
+      </PizzaInfoContainer>
+    </StyledMenuItem>
   );
 }
 

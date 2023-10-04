@@ -1,29 +1,53 @@
 // Test ID: IIDSAT
 
-import { getOrder, updateOrder } from "../../services/apiRestaurant";
+import { getOrder, updateOrder } from '../../services/apiRestaurant';
 import {
   calcMinutesLeft,
   formatCurrency,
   formatDate,
-} from "../../utils/helpers";
-import { useFetcher, useLoaderData } from "react-router-dom";
-import OrderItem from "./OrderItem";
-import { useEffect } from "react";
-import Button from "../../ui/Button";
-import UpdateOrder from "./UpdateOrder";
+} from '../../utils/helpers';
+import { useFetcher } from 'react-router-dom';
+import OrderItem from './OrderItem';
+import UpdateOrder from './UpdateOrder';
+import {
+  OrderStatusContainer,
+  StyledOrder,
+  OrderStatusTitle,
+  StatusLabel,
+  OrderBadge,
+  DeliveryInfo,
+  DeliveryText,
+  TimeInfo,
+  OrderItems,
+  OrderPriceContainer,
+  Price,
+} from './styledComponents/StyledOrder';
+import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import Error from '../../ui/Error';
+import { useSelector } from 'react-redux';
+import Loader from '../../ui/Loader';
 
 function Order() {
-  // Everyone can search for all orders, so for privacy reasons we're gonna gonna exclude names or address, these are only for the restaurant staff
-
-  const { order } = useLoaderData();
   const fetcher = useFetcher();
+  const { orderId } = useParams();
+  const [order, setOrder] = useState({});
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+  const menu = useSelector((state) => state.menu.pizzasList);
 
-  useEffect(
-    function () {
-      if (!fetcher.data && fetcher.state === "idle") fetcher.load("/menu");
-    },
-    [fetcher],
-  );
+  useEffect(() => {
+    async function loadOrder() {
+      try {
+        const order = await getOrder(orderId);
+        setOrder(order);
+        setLoading(false);
+      } catch (error) {
+        setError(error.message);
+      }
+    }
+    loadOrder();
+  }, [orderId]);
 
   const {
     id,
@@ -36,75 +60,73 @@ function Order() {
   } = order;
   const deliveryIn = calcMinutesLeft(estimatedDelivery);
 
+  const handleChangePriority = async () => {
+    const priorityUpdate = { priority: true };
+    setLoading(true);
+    try {
+      await updateOrder(orderId, priorityUpdate);
+      setOrder({ ...order, priority: true });
+      setLoading(false);
+    } catch (error) {
+      setError('Failed updating priority');
+    }
+  };
+
   return (
-    <div className="space-y-8 px-4 py-6">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-xl font-semibold">Order #{id} status</h2>
-
-        <div className="space-x-2">
-          {priority && (
-            <span className="rounded-full bg-red-500 px-3 py-1 text-sm font-semibold uppercase tracking-wide text-red-50">
-              Priority
-            </span>
-          )}
-          <span className="rounded-full bg-green-500 px-3 py-1 text-sm font-semibold uppercase tracking-wide text-green-50">
-            {status} order
-          </span>
-        </div>
-      </div>
-
-      <div className="flex flex-wrap items-center justify-between gap-2 bg-stone-200 px-6 py-5">
-        <p className="font-medium">
-          {deliveryIn >= 0
-            ? `Only ${calcMinutesLeft(estimatedDelivery)} minutes left 😃`
-            : "Order should have arrived"}
-        </p>
-        <p className="text-xs text-stone-500">
-          (Estimated delivery: {formatDate(estimatedDelivery)})
-        </p>
-      </div>
-
-      <ul className="dive-stone-200 divide-y border-b border-t">
-        {cart.map((item) => (
-          <OrderItem
-            item={item}
-            key={item.pizzaId}
-            ingredients={
-              fetcher.data?.find((el) => el.id === item.pizzaId)?.ingredients
+    <>
+      {loading && <Loader />}
+      {order.id && (
+        <StyledOrder>
+          <OrderStatusContainer>
+            <OrderStatusTitle>Order #{id} status</OrderStatusTitle>
+            <StatusLabel>
+              {priority && (
+                <OrderBadge backgroundcolor="#ff4842">Priority</OrderBadge>
+              )}
+              <OrderBadge backgroundcolor="#4caf50">{status} order</OrderBadge>
+            </StatusLabel>
+          </OrderStatusContainer>
+          <DeliveryInfo>
+            <DeliveryText>
+              {deliveryIn >= 0
+                ? `Only ${calcMinutesLeft(estimatedDelivery)} minutes left 😃`
+                : 'Order should have arrived'}
+            </DeliveryText>
+            {
+              <TimeInfo>
+                (Estimated delivery: {formatDate(estimatedDelivery)})
+              </TimeInfo>
             }
-            isLoadingIngredients={fetcher.state === "loading"}
-          />
-        ))}
-      </ul>
-
-      <div className="space-y-2 bg-stone-200 px-6 py-5">
-        <p className="text-sm font-medium text-stone-600">
-          Price pizza: {formatCurrency(orderPrice)}
-        </p>
-        {priority && (
-          <p className="text-sm font-medium text-stone-600">
-            Price priority: {formatCurrency(priorityPrice)}
-          </p>
-        )}
-        <p className="font-bold">
-          To pay on delivery: {formatCurrency(orderPrice + priorityPrice)}
-        </p>
-      </div>
-      {!priority && <UpdateOrder order={order} />}
-    </div>
+          </DeliveryInfo>
+          <OrderItems>
+            {cart.map((item) => (
+              <OrderItem
+                item={item}
+                key={item.pizzaId}
+                ingredients={
+                  menu.find((el) => el.id === item.pizzaId)?.ingredients
+                }
+                isLoadingIngredients={fetcher.state === 'loading'}
+              />
+            ))}
+          </OrderItems>
+          <OrderPriceContainer>
+            <Price type="unit">Price pizza: {formatCurrency(orderPrice)}</Price>
+            {priority && (
+              <Price type="unit">
+                Price priority: {formatCurrency(priorityPrice)}
+              </Price>
+            )}
+            <Price type="total">
+              To pay on delivery: {formatCurrency(orderPrice + priorityPrice)}
+            </Price>
+          </OrderPriceContainer>
+          {!priority && <UpdateOrder onClick={handleChangePriority} />}
+        </StyledOrder>
+      )}
+      {error && <Error />}
+    </>
   );
-}
-
-export async function action({ request, params }) {
-  const priority = { priority: true };
-  await updateOrder(params.orderId, priority);
-  return null;
-}
-
-export async function loader({ params }) {
-  const { orderId } = params;
-  const order = await getOrder(orderId);
-  return { order };
 }
 
 export default Order;

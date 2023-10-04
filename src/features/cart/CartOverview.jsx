@@ -1,7 +1,11 @@
-import { Link } from "react-router-dom";
-import { getTotalPizzasPrice, getTotalPizzasQuantity } from "./CartSlice";
-import { useSelector } from "react-redux";
-import { formatCurrency } from "../../utils/helpers";
+import { getTotalPizzasPrice, getTotalPizzasQuantity } from './CartSlice';
+import { useSelector } from 'react-redux';
+import { formatCurrency } from '../../utils/helpers';
+import {
+  StyledCartOverview,
+  CartOverviewInfo,
+  LinkToCart,
+} from './styledComponents/StyledCartOverview';
 
 function CartOverview() {
   const totalQuantity = useSelector(getTotalPizzasQuantity);
@@ -9,13 +13,13 @@ function CartOverview() {
 
   if (totalQuantity === 0) return null;
   return (
-    <div className="flex items-center justify-between bg-stone-800 px-4 py-4 text-sm uppercase text-stone-200 sm:px-6 md:text-base">
-      <p className="space-x-4 font-semibold text-stone-300 sm:space-x-6">
+    <StyledCartOverview>
+      <CartOverviewInfo>
         <span>{totalQuantity} pizzas</span>
         <span>{formatCurrency(totalPrice)}</span>
-      </p>
-      <Link to="/cart">Open cart &rarr;</Link>
-    </div>
+      </CartOverviewInfo>
+      <LinkToCart to="/cart">Open cart &rarr;</LinkToCart>
+    </StyledCartOverview>
   );
 }
 

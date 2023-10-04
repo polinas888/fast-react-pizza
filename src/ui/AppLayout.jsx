@@ -1,25 +1,32 @@
-import { Outlet, useNavigation } from "react-router-dom";
-import "../index.css";
+import { Outlet } from 'react-router-dom';
+import styled from 'styled-components';
+import '../index.css';
 
-import CartOverview from "../features/cart/CartOverview";
-import Header from "./Header";
-import Loader from "./Loader";
+import CartOverview from '../features/cart/CartOverview';
+import AppBar from './AppBar';
+
+const StyledAppLayout = styled.div`
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100vh;
+`;
+
+const Main = styled.main`
+  margin: 0 auto;
+  max-width: 48rem;
+`;
 
 function AppLayout() {
-  const navigation = useNavigation();
-  const isLoading = navigation.state === "loading";
-
   return (
-    <div className="grid h-screen grid-rows-[auto,1fr,auto]">
-      {isLoading && <Loader />}
-      <Header />
+    <StyledAppLayout>
+      <AppBar />
       <div>
-        <main className="mx-auto max-w-3xl">
+        <Main>
           <Outlet />
-        </main>
+        </Main>
       </div>
       <CartOverview />
-    </div>
+    </StyledAppLayout>
   );
 }
 
